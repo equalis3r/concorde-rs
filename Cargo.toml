@@ -1,0 +1,13 @@
+[package]
+name = "concorde_rs"
+version = "0.1.0"
+description = "A Rust binding to Concorde TSP Solver"
+edition = "2021"
+readme = "README.md"
+license = "MIT"
+repository = "https://github.com/equalis3r/concorde-rs"
+keywords =["tsp", "routing"]
+categories = ["solver"]
+
+[lib]
+name = "concorde_rs"
