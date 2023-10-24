@@ -1,14 +1,15 @@
 //! The interface for all available solvers.
+use super::errors::SolverError;
 use super::LowerDistanceMatrix;
 use std::fmt;
 use std::os::raw::c_uint;
 
-/// Heldkarp dynamic programming.
-/// # Panics
+/// Held-Karp dynamic programming.
+/// # Errors
 ///
-/// If the solver cannot solve the TSP, it will return -1.0 and panic.
-#[must_use]
-pub fn tsp_hk(dist_mat: &LowerDistanceMatrix) -> Solution {
+/// If the solver cannot solve the TSP, the return length from Concorde TSP is -1.0.
+/// Thus, the solver will return SolverError.
+pub fn tsp_hk(dist_mat: &LowerDistanceMatrix) -> Result<Solution, SolverError> {
     let mut tour = vec![0u32; dist_mat.num_nodes as usize];
     let length = unsafe {
         CCtsp_hk(
@@ -17,18 +18,18 @@ pub fn tsp_hk(dist_mat: &LowerDistanceMatrix) -> Solution {
             dist_mat.num_nodes,
         )
     };
-    Solution {
-        length: u32::try_from(length).expect("Heldkarp failed!"),
-        tour,
+    match u32::try_from(length) {
+        Ok(val) => Ok(Solution { length: val, tour }),
+        Err(_) => Err(SolverError::SolverFailed(String::from("Held-Karp"))),
     }
 }
 
 /// Lin-Kernighan heuristic.
-/// # Panics
+/// # Errors
 ///
-/// If the solver cannot solve the TSP, it will return -1.0 and panic.
-#[must_use]
-pub fn tsp_lk(dist_mat: &LowerDistanceMatrix) -> Solution {
+/// If the solver cannot solve the TSP, the return length from Concorde TSP is -1.0.
+/// Thus, the solver will return SolverError.
+pub fn tsp_lk(dist_mat: &LowerDistanceMatrix) -> Result<Solution, SolverError> {
     let mut tour = vec![0u32; dist_mat.num_nodes as usize];
     let length = unsafe {
         CCtsp_lk(
@@ -37,9 +38,9 @@ pub fn tsp_lk(dist_mat: &LowerDistanceMatrix) -> Solution {
             dist_mat.num_nodes,
         )
     };
-    Solution {
-        length: u32::try_from(length).expect("Lin-Kernighan failed!"),
-        tour,
+    match u32::try_from(length) {
+        Ok(val) => Ok(Solution { length: val, tour }),
+        Err(_) => Err(SolverError::SolverFailed(String::from("Lin-Kernighan"))),
     }
 }
 
@@ -104,7 +105,7 @@ mod tests {
     fn test_5_cities_instance() {
         let dist_mat =
             LowerDistanceMatrix::new(5, vec![0, 3, 0, 4, 4, 0, 2, 6, 5, 0, 7, 3, 8, 6, 0]);
-        let sol = tsp_hk(&dist_mat);
+        let sol = tsp_hk(&dist_mat).unwrap();
         assert_eq!(sol.length, 19);
         assert_eq!(Solution::calc_length_from_tour(&sol.tour, &dist_mat), 19);
     }
@@ -119,7 +120,7 @@ mod tests {
                 372, 175, 338, 264, 232, 249, 0, 505, 289, 262, 476, 196, 360, 444, 402, 495, 0,
             ],
         );
-        let sol = tsp_hk(&dist_mat);
+        let sol = tsp_hk(&dist_mat).unwrap();
         assert_eq!(sol.length, 1637);
         assert_eq!(Solution::calc_length_from_tour(&sol.tour, &dist_mat), 1637);
     }
@@ -136,7 +137,7 @@ mod tests {
                 68, 49, 56, 0, 51, 45, 38, 49, 54, 71, 55, 52, 57, 35, 56, 39, 53, 0,
             ],
         );
-        let sol = tsp_hk(&dist_mat);
+        let sol = tsp_hk(&dist_mat).unwrap();
         assert_eq!(sol.length, 284);
         assert_eq!(Solution::calc_length_from_tour(&sol.tour, &dist_mat), 284);
     }
@@ -157,7 +158,7 @@ mod tests {
                 29, 36, 236, 390, 238, 301, 55, 96, 153, 336, 0,
             ],
         );
-        let sol = tsp_lk(&dist_mat);
+        let sol = tsp_lk(&dist_mat).unwrap();
         assert_eq!(sol.length, 2085);
         assert_eq!(Solution::calc_length_from_tour(&sol.tour, &dist_mat), 2085);
     }
@@ -188,7 +189,7 @@ mod tests {
                 95, 51, 51, 81, 79, 37, 27, 58, 107, 90, 0,
             ],
         );
-        let sol = tsp_lk(&dist_mat);
+        let sol = tsp_lk(&dist_mat).unwrap();
         assert_eq!(sol.length, 937);
         assert_eq!(Solution::calc_length_from_tour(&sol.tour, &dist_mat), 937);
     }
@@ -230,7 +231,7 @@ mod tests {
                 77, 60, 55, 93, 56, 91, 92, 84, 63, 116, 41, 69, 86, 40, 96, 42, 87, 92, 75, 89, 0,
             ],
         );
-        let sol = tsp_lk(&dist_mat);
+        let sol = tsp_lk(&dist_mat).unwrap();
         assert_eq!(sol.length, 476);
         assert_eq!(Solution::calc_length_from_tour(&sol.tour, &dist_mat), 476);
     }

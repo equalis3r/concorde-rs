@@ -1,6 +1,6 @@
 [package]
 name = "concorde_rs"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Rust binding to Concorde TSP Solver"
 edition = "2021"
 readme = "README.md"
