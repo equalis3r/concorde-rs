@@ -1,4 +1,9 @@
-# concorde-rs
+# concorde-rs &emsp; [![Build Status]][actions] [![Latest Version]][crates.io]
+[Build Status]: https://img.shields.io/github/actions/workflow/status/equalis3r/concorde-rs/general.yml?branch=master
+[actions]: https://github.com/equalis3r/concorde-rs/actions?query=branch%3Amaster
+[Latest Version]: https://img.shields.io/crates/v/concorde_rs.svg
+[crates.io]: https://crates.io/crates/concorde_rs
+
 A Rust binding to [Concorde TSP Solver](https://www.math.uwaterloo.ca/tsp/concorde.html) that allows for directly calling the solver instead of communicating the problem via TSP.lib file.
 At the moment, this package only supports the call to two routines of the Concorde TSP Solver:
 1. [Held-Karp](https://en.wikipedia.org/wiki/Held-Karp_algorithm): an exact solver based on dynamic programming
