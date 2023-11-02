@@ -31,7 +31,7 @@ o = $(OBJ_SUFFIX)
 
 THISLIB=util.a
 LIBSRCS=allocrus.c util.c  dheaps_i.c edgelen.c edgeutil.c \
-        sortrus.c  urandom.c  zeit.c \
+        sortrus.c  urandom.c  \
 
 ALLSRCS=$(LIBSRCS)
 

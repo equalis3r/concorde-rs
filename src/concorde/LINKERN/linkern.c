@@ -297,17 +297,10 @@ int CClinkern_tour(int ncount, CCdatagroup *dat, int ecount, int *elist,
     int rval = 0;
     int i;
     int *tcyc = (int *)NULL;
-    double startzeit;
     graph G;
     distobj D;
     CCptrworld intptr_world;
     CCptrworld edgelook_world;
-
-    if (silent == 0) {
-        printf("linkern ...\n");
-        fflush(stdout);
-    }
-    startzeit = CCutil_zeit();
 
     initgraph(&G);
     init_distobj(&D);
@@ -382,12 +375,6 @@ int CClinkern_tour(int ncount, CCdatagroup *dat, int ecount, int *elist,
         goto CLEANUP;
     }
 
-    if (silent == 0) {
-        printf("Best cycle length: %.0f\n", *val);
-        printf("Lin-Kernighan Running Time: %.2f\n", CCutil_zeit() - startzeit);
-        fflush(stdout);
-    }
-
     if (outcycle) {
         for (i = 0; i < ncount; i++)
             outcycle[i] = tcyc[i];
@@ -422,7 +409,6 @@ static int repeated_lin_kernighan(graph *G, distobj *D, int *cyc,
     int *win_cycle = (int *)NULL;
     flipstack winstack, fstack;
     double t, best = *val, oldbest = *val;
-    double szeit = CCutil_zeit();
 #ifdef ACCEPT_BAD_TOURS
     double heat = *val / (20 * G->ncount), tdelta;
 #endif
@@ -507,16 +493,6 @@ static int repeated_lin_kernighan(graph *G, distobj *D, int *cyc,
     winstack.counter = 0;
     win_cycle[0] = -1;
 
-    if (silent == 0) {
-        if (quitcount > 0) {
-            printf("%4d Steps   Best: %.0f   %.2f seconds\n", round, best,
-                   CCutil_zeit() - szeit);
-        } else {
-            printf("LK Cycle: %.0f\n", best);
-        }
-        fflush(stdout);
-    }
-
     while (round < quitcount) {
         hit = 0;
         fstack.counter = 0;
@@ -568,12 +544,6 @@ static int repeated_lin_kernighan(graph *G, distobj *D, int *cyc,
             }
 #ifdef ACCEPT_BAD_TOURS
             else {
-                if (silent == 0 && t > best) {
-                    printf("%4d Steps   Best: %.0f   %.2f seconds (Negative "
-                           "%.0f) (%.0f)\n",
-                           round, t, CCutil_zeit() - szeit, t - best, oldbest);
-                    fflush(stdout);
-                }
                 oldbest = best;
                 best = t;
             }
@@ -600,29 +570,7 @@ static int repeated_lin_kernighan(graph *G, distobj *D, int *cyc,
         }
 
         round++;
-        if (silent == 0 && (hit || (round % 1000 == 999))) {
-            printf("%4d Steps   Best: %.0f   %.2f seconds\n", round, best,
-                   CCutil_zeit() - szeit);
-            fflush(stdout);
-        }
 
-        // if (saveit_name && (round % 10000 == 9999) && best < oldbest) {
-        //     rval = save_tour(ncount, saveit_name, &F);
-        //     if (rval) {
-        //         fprintf(stderr, "save_tour failed\n");
-        //         goto CLEANUP;
-        //     }
-        //     oldbest = best;
-        // }
-
-        if (time_bound > 0.0 && (CCutil_zeit() - szeit) > time_bound) {
-            printf("STOP - timebound (%.2f seconds)\n", CCutil_zeit() - szeit);
-            if (silent == 1) {
-                printf("STEPS: %d\n", round);
-            }
-            fflush(stdout);
-            break;
-        }
         if (length_bound > 0.0 && best <= length_bound) {
             printf("STOP - length bound reached (%.0f)\n", length_bound);
             if (silent == 1) {
@@ -639,22 +587,6 @@ static int repeated_lin_kernighan(graph *G, distobj *D, int *cyc,
 
     CClinkern_flipper_cycle(&F, cyc);
     CClinkern_flipper_finish(&F);
-
-    // if (saveit_name && best < oldbest) {
-    //     /*
-    //             rval = CCutil_writecycle_edgelist (ncount, saveit_name, cyc,
-    //                                                D->dat, 0);
-    //             if (rval) {
-    //                 fprintf (stderr, "could not write the cycle\n"); goto
-    //        CLEANUP;
-    //             }
-    //     */
-    //     rval = CCutil_writecycle(ncount, saveit_name, cyc, 0);
-    //     CCcheck_rval(rval, "CCutil_writecycle failed");
-
-    //    printf("Wrote the last tour to %s\n", saveit_name);
-    //    fflush(stdout);
-    //}
 
     t = cycle_length(ncount, cyc, D);
     if (t != best) {
@@ -1647,29 +1579,6 @@ static edgelook *weird_look_ahead3(graph *G, distobj *D, CClk_flipper *F,
     }
     return list;
 }
-
-// static int save_tour(int ncount, char *sname, CClk_flipper *F) {
-//     int rval = 0;
-//     int *ctemp = (int *)NULL;
-//
-//     ctemp = CC_SAFE_MALLOC(ncount, int);
-//     if (ctemp == (int *)NULL) {
-//         fprintf(stderr, "out of memory in save_tour\n");
-//         rval = 1;
-//         goto CLEANUP;
-//     }
-//     CClinkern_flipper_cycle(F, ctemp);
-//     rval = CCutil_writecycle(ncount, sname, ctemp, 0);
-//     CCcheck_rval(rval, "CCutil_writecycle failed");
-//
-//     printf("Wrote the tour to %s\n", sname);
-//     fflush(stdout);
-//
-// CLEANUP:
-//
-//     CC_IFFREE(ctemp, int);
-//     return rval;
-// }
 
 static double cycle_length(int ncount, int *cyc, distobj *D) {
     int i;

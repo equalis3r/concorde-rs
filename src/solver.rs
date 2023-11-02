@@ -1,8 +1,9 @@
 //! The interface for all available solvers.
 use super::errors::SolverError;
 use super::LowerDistanceMatrix;
+use std::ffi::c_int;
+use std::ffi::c_uint;
 use std::fmt;
-use std::os::raw::c_uint;
 
 /// Held-Karp dynamic programming.
 /// # Errors
@@ -30,12 +31,14 @@ pub fn tsp_hk(dist_mat: &LowerDistanceMatrix) -> Result<Solution, SolverError> {
 /// If the solver cannot solve the TSP, the return length from Concorde TSP is -1.0.
 /// Thus, the solver will return SolverError.
 pub fn tsp_lk(dist_mat: &LowerDistanceMatrix) -> Result<Solution, SolverError> {
+    let stall_count = i32::pow(10, 6);
     let mut tour = vec![0u32; dist_mat.num_nodes as usize];
     let length = unsafe {
         CCtsp_lk(
             dist_mat.values.as_ptr(),
             tour.as_mut_ptr(),
             dist_mat.num_nodes,
+            stall_count,
         )
     };
     match u32::try_from(length) {
@@ -46,7 +49,12 @@ pub fn tsp_lk(dist_mat: &LowerDistanceMatrix) -> Result<Solution, SolverError> {
 
 extern "C" {
     fn CCtsp_hk(dist_mat: *const c_uint, tour: *mut c_uint, ncount: c_uint) -> i32;
-    fn CCtsp_lk(dist_mat: *const c_uint, tour: *mut c_uint, ncount: c_uint) -> i32;
+    fn CCtsp_lk(
+        dist_mat: *const c_uint,
+        tour: *mut c_uint,
+        ncount: c_uint,
+        stall_count: c_int,
+    ) -> i32;
 }
 
 /// A solution consists of the tour and the length of that tour.
