@@ -151,7 +151,7 @@ static int run_hk(unsigned int ncount, CCdatagroup *dat, int *hk_tour) {
     CCcheck_NULL(hk_tlist, "out of memory for hk_tlist");
 
     rval = CCheldkarp_small(ncount, dat, (double *)NULL, &hk_val, &hk_found, 0,
-                            hk_tlist, 10000000, 2);
+                            hk_tlist, 100000000, 2);
     CCcheck_rval(rval, "CCheldkarp_small failed");
 
     rval = CCutil_edge_to_cycle(ncount, hk_tlist, &hk_yesno, hk_tour);

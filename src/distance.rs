@@ -84,7 +84,7 @@ impl<T: Distance> From<&[T]> for LowerDistanceMatrix {
                     .map(|node_j| node_i.calc_shortest_dist(node_j))
             })
             .collect();
-        LowerDistanceMatrix::new(nodes.len() as u32, values)
+        Self::new(nodes.len() as u32, values)
     }
 }
 

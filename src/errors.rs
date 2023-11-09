@@ -9,7 +9,7 @@ pub enum SolverError {
 impl error::Error for SolverError {
     fn source(&self) -> Option<&(dyn error::Error + 'static)> {
         match *self {
-            SolverError::SolverFailed(_) => None,
+            Self::SolverFailed(_) => None,
         }
     }
 }
@@ -17,7 +17,7 @@ impl error::Error for SolverError {
 impl fmt::Display for SolverError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            SolverError::SolverFailed(func_name) => {
+            Self::SolverFailed(func_name) => {
                 write!(f, "{func_name} failed to solve the problem.")
             }
         }

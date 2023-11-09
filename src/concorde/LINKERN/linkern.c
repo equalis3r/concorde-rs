@@ -255,7 +255,6 @@ static int buildgraph(graph *G, int ncount, int ecount, int *elist, distobj *D),
                      int *delta, int kicktype, flipstack *win,
                      flipstack *fstack, CCptrworld *intptr_world,
                      CCrandstate *rstate),
-    // save_tour(int ncount, char *sname, CClk_flipper *F),
     build_adddel(adddel *E, int ncount),
     build_aqueue(aqueue *Q, int ncount, CCptrworld *intptr_world),
     pop_from_active_queue(aqueue *Q, CCptrworld *intptr_world),
@@ -572,11 +571,6 @@ static int repeated_lin_kernighan(graph *G, distobj *D, int *cyc,
         round++;
 
         if (length_bound > 0.0 && best <= length_bound) {
-            printf("STOP - length bound reached (%.0f)\n", length_bound);
-            if (silent == 1) {
-                printf("STEPS: %d\n", round);
-            }
-            fflush(stdout);
             break;
         }
     }

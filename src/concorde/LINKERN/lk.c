@@ -47,7 +47,7 @@ static int kick_type = CC_LK_WALK_KICK;
 static int tour_type = LK_QBORUVKA;
 
 int CCtsp_lk(const unsigned int *distarr, unsigned int *route,
-             unsigned int ncount, int stallcount) {
+             unsigned int ncount, int stallcount, double length_bound) {
     int k, rval;
     double val;
     int tempcount, *templist;
@@ -58,7 +58,6 @@ int CCtsp_lk(const unsigned int *distarr, unsigned int *route,
     // Default values
     int in_repeater = ncount;
     double time_bound = -1.0;
-    double length_bound = -1.0;
     int quadtry = 2;
 
     CCutil_sprand(seed, &rstate);
