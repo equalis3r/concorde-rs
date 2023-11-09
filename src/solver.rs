@@ -30,15 +30,18 @@ pub fn tsp_hk(dist_mat: &LowerDistanceMatrix) -> Result<Solution, SolverError> {
 ///
 /// If the solver cannot solve the TSP, the return length from Concorde TSP is -1.0.
 /// Thus, the solver will return SolverError.
-pub fn tsp_lk(dist_mat: &LowerDistanceMatrix) -> Result<Solution, SolverError> {
-    let stall_count = i32::pow(10, 6);
+pub fn tsp_lk(dist_mat: &LowerDistanceMatrix, stall: Option<i32>) -> Result<Solution, SolverError> {
+    let stall = match stall {
+        Some(val) => val,
+        None => i32::pow(10, 7),
+    };
     let mut tour = vec![0u32; dist_mat.num_nodes as usize];
     let length = unsafe {
         CCtsp_lk(
             dist_mat.values.as_ptr(),
             tour.as_mut_ptr(),
             dist_mat.num_nodes,
-            stall_count,
+            stall,
         )
     };
     match u32::try_from(length) {
@@ -166,7 +169,7 @@ mod tests {
                 29, 36, 236, 390, 238, 301, 55, 96, 153, 336, 0,
             ],
         );
-        let sol = tsp_lk(&dist_mat).unwrap();
+        let sol = tsp_lk(&dist_mat, None).unwrap();
         assert_eq!(sol.length, 2085);
         assert_eq!(Solution::calc_length_from_tour(&sol.tour, &dist_mat), 2085);
     }
@@ -197,7 +200,7 @@ mod tests {
                 95, 51, 51, 81, 79, 37, 27, 58, 107, 90, 0,
             ],
         );
-        let sol = tsp_lk(&dist_mat).unwrap();
+        let sol = tsp_lk(&dist_mat, None).unwrap();
         assert_eq!(sol.length, 937);
         assert_eq!(Solution::calc_length_from_tour(&sol.tour, &dist_mat), 937);
     }
@@ -239,7 +242,7 @@ mod tests {
                 77, 60, 55, 93, 56, 91, 92, 84, 63, 116, 41, 69, 86, 40, 96, 42, 87, 92, 75, 89, 0,
             ],
         );
-        let sol = tsp_lk(&dist_mat).unwrap();
+        let sol = tsp_lk(&dist_mat, None).unwrap();
         assert_eq!(sol.length, 476);
         assert_eq!(Solution::calc_length_from_tour(&sol.tour, &dist_mat), 476);
     }

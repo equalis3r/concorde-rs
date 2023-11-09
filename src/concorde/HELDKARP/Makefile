@@ -21,7 +21,7 @@ CCINCDIR=$(SRCROOT)/INCLUDE
 srcdir = .
 
 CC = gcc
-CFLAGS = -g -O2  -I$(BLDROOT)/INCLUDE -I$(CCINCDIR)
+CFLAGS = -g -O2 -I$(BLDROOT)/INCLUDE -I$(CCINCDIR)
 LDFLAGS = -g -O2 
 LIBFLAGS = -liberty -lbfd -lm 
 RANLIB = ranlib
